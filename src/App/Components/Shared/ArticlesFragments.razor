@@ -90,22 +90,23 @@
                 </ul>
             </a>
         </div>;
-    
-    
+
+
     public static RenderFragment<(ArticleList ArticlesList, ArticlesFilter Filter)> RenderArticleList = context =>
         context.ArticlesList.ArticlesCount == 0
             ? @<div>No articles are here... yet.</div>
             : @<div>
                   @foreach (var article in context.ArticlesList.Articles)
                   {
-                      @RenderArticleSummary(article);
+                      @RenderArticleSummary(article)
+             
                   }
-                  @RenderArticleListPagination((context.Filter.Page, GetTotalPages(context.ArticlesList), context.Filter));
+                  @RenderArticleListPagination((context.Filter.Page, GetTotalPages(context.ArticlesList), context.Filter))
               </div>;
 
     public static readonly RenderFragment<(int ActivePage, int TotalPages, ArticlesFilter Filter)> RenderArticleListPagination = context =>
     {
-        if (context.TotalPages <= 1) 
+        if (context.TotalPages <= 1)
             return @<text></text>;
         
         return @<nav id="articlelistpagination">
