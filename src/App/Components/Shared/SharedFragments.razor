@@ -1,0 +1,119 @@
+@using RealworldBlazorHtmx.App.ServiceClient
+
+@code {
+
+    public static readonly RenderFragment<(RenderFragment Body, string Title)> RenderApp = context =>
+        @<text>
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="utf-8"/>
+                <title>@context.Title</title>
+                <link href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" type="text/css"/>
+                <link
+                    href="//fonts.googleapis.com/css?family=Titillium+Web:700|Source+Serif+Pro:400,700|Merriweather+Sans:400,700|Source+Sans+Pro:400,300,600,700,300italic,400italic,600italic,700italic"
+                    rel="stylesheet" type="text/css"/>
+                <script src="https://unpkg.com/htmx.org@2.0.2"
+                        integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ"
+                        crossorigin="anonymous"></script>
+                <script src="https://unpkg.com/htmx-ext-preload@2.0.1/preload.js"></script>
+                <script src="https://unpkg.com/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
+                <link rel="stylesheet" href="//demo.productionready.io/main.css"/>
+            </head>;
+
+            <body hx-ext="preload, json-enc" hx-boost="true">
+            @context.Body
+            </body>
+
+            </html>
+         </text>;
+    
+    public static readonly RenderFragment<(RenderFragment Body, bool IsAuthenticated, string ActivePath, User? User)> RenderMainLayout = context =>
+        @<text>
+             @RenderHeader((context.IsAuthenticated, context.ActivePath, context.User))
+
+             @context.Body
+
+             @RenderFooter
+         </text>;
+    
+    public static readonly RenderFragment<(bool IsAuthenticated, string ActivePath, User? User)> RenderHeader = context =>
+    {
+        if (!context.IsAuthenticated)
+        {
+            return @<nav class="navbar navbar-light">
+                <div class="container">
+                    <a class="navbar-brand" href="/">conduit</a>
+                    <ul class="nav navbar-nav pull-xs-right">
+                        <li class="nav-item">
+                            <a class="nav-link @IsActivePath("/", context.ActivePath)" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @IsActivePath("/login", context.ActivePath)" href="/login">Sign in</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @IsActivePath("/register", context.ActivePath)" href="/register">Sign up</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>;
+        }
+        else
+        {
+            return @<nav class="navbar navbar-light">
+                       <div class="container">
+                           <a class="navbar-brand" href="/">conduit</a>
+                           <ul class="nav navbar-nav pull-xs-right">
+                               <li class="nav-item">
+                                   <a class="nav-link @IsActivePath("/", context.ActivePath)" href="/">Home</a>
+                               </li>
+                               <li class="nav-item">
+                                   <a class="nav-link @IsActivePath("/editor", context.ActivePath)" href="/editor"> <i class="ion-compose"></i>New Article</a>
+                               </li>
+                               <li class="nav-item">
+                                   <a class="nav-link @IsActivePath("/settings", context.ActivePath)" href="/settings"> <i class="ion-gear-a"></i>Settings</a>
+                               </li>
+                               <li class="nav-item">
+                                   <a class="nav-link" href="/profile/?author=@context.User?.Username">
+                                       <img src="@context.User?.Image" class="user-pic"/>
+                                       @context.User?.Username
+                                   </a>
+                               </li>
+                           </ul>
+                       </div>
+                   </nav>;
+        }
+    };
+
+    public static RenderFragment RenderFooter =>
+        @<footer>
+            <div class="container">
+                <a href="/" class="logo-font">conduit</a>
+                <span class="attribution">
+                    An interactive learning project from <a href="https://thinkster.io">Thinkster</a>. Code &amp;
+                    design licensed under MIT.
+                </span>
+            </div>
+        </footer>;
+    
+    
+    public static readonly RenderFragment<Dictionary<string, string[]>?> RenderErrors = errors =>
+    {
+        if (errors == null)
+            return @<text></text>;
+
+        return @<ul class="error-messages">
+                   @foreach (var error in errors)
+                   {
+                       <li>@error.Key @string.Join(" ", error.Value)</li>
+                   }
+               </ul>;
+    };
+
+    
+    private static string IsActivePath(string path, string activePath)
+    {
+        return activePath == path ? "active" : "";
+    }
+
+}
