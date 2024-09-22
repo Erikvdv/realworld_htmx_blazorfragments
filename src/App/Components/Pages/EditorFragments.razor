@@ -1,0 +1,64 @@
+@using RealworldBlazorHtmx.App.Components.Shared
+@using RealworldBlazorHtmx.App.ServiceClient
+@code {
+
+    public static readonly RenderFragment<(UpdateArticle Article, string? Slug, Dictionary<string, string[]>? ErrorList)> RenderEditor = context =>
+        @<div class="editor-page" id="editorPage">
+            <div class="container page">
+                <div class="row">
+                    <div class="col-md-10 offset-md-1 col-xs-12">
+                        @SharedFragments.RenderErrors(context.ErrorList)
+
+                        <form>
+                            <fieldset>
+                                <fieldset class="form-group">
+                                    <input type="hidden" name="slug" value="@context.Slug"/>
+                                    <input type="text" class="form-control form-control-lg" placeholder="Article Title" name="title" value="@context.Article.Title"/>
+                                </fieldset>
+                                <fieldset class="form-group">
+                                    <input type="text" class="form-control" placeholder="What's this article about?" name="description" value="@context.Article.Description"/>
+                                </fieldset>
+                                <fieldset class="form-group">
+                                    <textarea
+                                class="form-control"
+                                rows="8"
+                                placeholder="Write your article (in markdown)"
+                                name="body"
+                                value="@context.Article.Body"
+                            ></textarea>
+                                </fieldset>
+                                @RenderTags(context.Article.TagList)
+                            </fieldset>
+                            <button class="btn btn-lg pull-xs-right btn-primary" type="button" hx-post="/editor/article" hx-params="slug,title,description,body,tags" hx-target="#editorPage">
+                                Publish Article
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>;
+    
+    public static readonly RenderFragment<List<string>> RenderTags = tags =>
+        @<fieldset class="form-group" hx-trigger="keyup[keyCode==13]"
+                   hx-post="/editor/tags" hx-params="newTag,tags" id="tagsForm" hx-swap="outerHTML">
+            
+            <input type="text" class="form-control"
+                   placeholder="Enter tags"
+                   name="newTag"/>
+
+            <div class="tag-list">
+                <input type="hidden" name="tags" value=""/>
+                <input type="hidden" name="tags" value=""/>
+                @foreach (var tag in tags)
+                {
+                    <span class="tag-default tag-pill">
+                        <i class="ion-close-round" hx-delete="/editor/tags/@tag" hx-params="tags" hx-target="#tagsForm"></i>
+                        @tag
+                    </span>
+                    <input type="hidden" name="tags" value="@tag"/>
+                }
+
+            </div>
+        </fieldset>;
+
+}

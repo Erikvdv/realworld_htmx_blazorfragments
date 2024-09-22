@@ -1,0 +1,40 @@
+@using RealworldBlazorHtmx.App.Components.Shared
+@code {
+
+    public static readonly RenderFragment<(bool IsAuthenticated, ArticlesFilter Filter)> RenderHome = context =>
+        @<div class="home-page">
+            @if (!context.IsAuthenticated)
+            {
+                <div class="banner">
+                    <div class="container">
+                        <h1 class="logo-font">conduit</h1>
+                        <p>A place to share your knowledge.</p>
+                    </div>
+                </div>
+            }
+
+            <div class="container page">
+                <div class="row">
+                    <div class="col-md-9">
+                        @ArticlesFragments.RenderArticles((context.IsAuthenticated, context.Filter))
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="sidebar" hx-get="/home/tags" hx-trigger="load">Loading tags...</div>
+                    </div>
+                </div>
+            </div>
+        </div>;
+    
+    public static readonly RenderFragment<List<string>> RenderTags = tags =>
+        @<div class="sidebar">
+            <p>Popular Tags</p>
+            <div class="tag-list" id="taglist">
+                @foreach (var tag in tags)
+                {
+                    <a class="tag-default tag-pill" href="?page=1&tag=@tag">@tag</a>
+                }
+            </div>
+        </div>;
+
+}

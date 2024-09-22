@@ -1,0 +1,150 @@
+@using Markdig
+@using RealworldBlazorHtmx.App.ServiceClient
+
+@code {
+
+    public static readonly RenderFragment<(bool IsAuthenticated, ServiceClient.Article Article, User? User)> RenderArticle = context =>
+        @<div class="article-page" id="articlepage">
+            <div class="banner">
+                <div class="container">
+                    <h1>@context.Article.Title</h1>
+
+                    <div class="article-meta">
+                        <a href="/profile/?author=@context.Article.Author.Username">
+                            <img src="@context.Article.Author.Image"/>
+                        </a>
+                        <div class="info">
+                            <a href="/profile/?author=@context.Article.Author.Username"
+                               class="author">
+                                @context.Article.Author.Username
+                            </a>
+                            <span class="date">@context.Article.UpdatedAt.ToString("MMMM d, yyyy")</span>
+                        </div>
+                        @if (context.User is not null && context.User.Username == context.Article.Author.Username)
+                        {
+                            <a href="/editor/@context.Article.Slug">
+                                <button class="btn btn-sm btn-outline-secondary">
+                                    <i class="ion-edit"></i> Edit Article
+                                </button>
+                            </a>
+                            <button class="btn btn-sm btn-outline-danger" hx-delete="/article/@context.Article.Slug">
+                                <i class="ion-trash-a"></i> Delete Article
+                            </button>
+                        }
+                        else
+                        {
+                            @RenderArticleAuthor(context.Article.Author)
+
+                            @if (context.Article.Favorited)
+                            {
+                                <button class="btn btn-sm btn-primary" hx-delete="/article/@context.Article.Slug/favorite"
+                                        hx-target="#articlepage">
+                                    <i class="ion-heart"></i>
+                                    Unfavorite Article <span class="counter">(@context.Article.FavoritesCount)</span>
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-sm btn-outline-primary" hx-post="/article/@context.Article.Slug/favorite"
+                                        hx-target="#articlepage">
+                                    <i class="ion-heart"></i>
+                                    Favorite Article <span class="counter">(@context.Article.FavoritesCount)</span>
+                                </button>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="container page">
+                <div class="row article-content">
+                    <div class="col-md-12">
+                        @((MarkupString) GetHtml(context.Article.Description))
+                        @((MarkupString) GetHtml(context.Article.Body))
+                        <ul class="tag-list">
+                            @foreach (var tag in context.Article.TagList)
+                            {
+                                <li class="tag-default tag-pill tag-outline">@tag</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+
+                <hr/>
+                @if (context is {IsAuthenticated: true, User: not null})
+                {
+                    <div class="col-xs-12 col-md-8 offset-md-2">
+                        <div hx-get="/article/@context.Article.Slug/comments" hx-trigger="load" id="commentlist"></div>
+                    </div>
+                }
+
+            </div>
+        </div>;
+
+
+    public static readonly RenderFragment<ServiceClient.Profile> RenderArticleAuthor = profile =>
+        @<text>
+             @if (profile.Following)
+             {
+                 <button class="btn btn-sm action-btn btn-secondary" hx-delete="/article/followauthor/@profile.Username" hx-swap="outerHTML">
+                     <i class="ion-plus-round"></i>
+                     &nbsp; Unfollow @profile.Username
+                 </button>
+             }
+             else
+             {
+                 <button class="btn btn-sm btn-outline-secondary" hx-post="/article/followauthor/@profile.Username" hx-swap="outerHTML">
+                     <i class="ion-plus-round"></i>
+                     &nbsp; Follow @profile.Username
+                 </button>
+             }
+        </text>;
+
+    public static readonly RenderFragment<(string ArticleSlug, List<Comment> Comments, User User)> RenderComments = context =>
+        @<text>
+             <form class="card comment-form" hx-post="/article/@context.ArticleSlug/comments" hx-include="[name='comment']" hx-target="#commentlist">
+                 <div class="card-block">
+                     <textarea class="form-control" placeholder="Write a comment..." rows="3" name="comment"></textarea>
+                 </div>
+                 <div class="card-footer">
+                     <img src="@context.User.Image" class="comment-author-img"/>
+                     <button class="btn btn-sm btn-primary">Post Comment</button>
+                 </div>
+             </form>
+             @foreach (var comment in context.Comments)
+             {
+                 @RenderComment((comment, context.User.Username, context.ArticleSlug))
+             }
+    </text>;
+
+    private static readonly RenderFragment<(Comment Comment, string Username, string ArticleSlug)> RenderComment = context => 
+        @<div class="card">
+           <div class="card-block">
+               <p class="card-text">
+                   @context.Comment.Body
+               </p>
+           </div>
+           <div class="card-footer">
+               <a href="/profile/?author=@context.Comment.Author" class="comment-author">
+                   <img src="@context.Comment.Author.Image" class="comment-author-img"/>
+               </a>
+               &nbsp;
+               <a href="/profile/?author=@context.Comment.Author.Username" class="comment-author">@context.Comment.Author.Username</a>
+               <span class="date-posted">@context.Comment.UpdatedAt</span>
+               @if (context.Comment.Author.Username == context.Username)
+               {
+                   <span class="mod-options">
+                       <i class="ion-trash-a" hx-delete="/article/@context.ArticleSlug/comments/@context.Comment.Id" hx-target="#commentlist"></i>
+                   </span>
+               }
+           </div>
+        </div>;
+    private static string GetHtml(string markdown)
+    {
+        var pipeline = new MarkdownPipelineBuilder()
+            .UseSoftlineBreakAsHardlineBreak()
+            .Build();
+        return Markdown.ToHtml(markdown, pipeline);
+    }
+
+}

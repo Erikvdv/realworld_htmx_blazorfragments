@@ -1,0 +1,146 @@
+@using RealworldBlazorHtmx.App.ServiceClient
+
+@code {
+    
+    
+    public static readonly RenderFragment<(bool IsAuthenticated, ArticlesFilter Filter)> RenderArticles = context =>
+        @<div>
+            <div class="articles-toggle" id="feed-toggle">
+                <ul class="nav nav-pills outline-active">
+                    @if (context.Filter.Author is not null || context.Filter.Favorited is not null)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link @NavItemClassActive(context.Filter,"myArticles")" href="/profile/?author=@context.Filter.Favorited">
+                                My
+                                Articles
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @NavItemClassActive(context.Filter,"favoritedArticles")"
+                               href="/profile/?favorited=@context.Filter.Author">
+                                Favorited Articles
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        @if (context is {IsAuthenticated: true})
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @NavItemClassActive(context.Filter, "myFeed")" href="/?page=1&myfeed=true">Your Feed</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @NavItemClassActive(context.Filter, "global")" href="/?page=1&myfeed=false">Global Feed</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @NavItemClassActive(context.Filter,"global")" href="/?page=1">Global Feed</a>
+                            </li>
+                        }
+
+                        @if (context.Filter.Tag != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @NavItemClassActive(context.Filter,"tag")">#@context.Filter.Tag</a>
+                            </li>
+                        }
+                    }
+
+                </ul>
+            </div>
+            <div id="articles" hx-get="/articles/list@(context.Filter.ToQueryString())" hx-trigger="load">
+                Loading articles...
+            </div>
+
+        </div>;
+
+    public static readonly RenderFragment<Article> RenderArticleSummary = article =>
+        @<div class="article-preview">
+            <div class="article-meta">
+                <a href=@($"/profile/?author={article.Author.Username}")>
+                    <img src="@article.Author.Image" alt="@article.Author.Username"/>
+                </a>
+                <div class="info">
+                    <a class="author" href="/profile/?author=@article.Author.Username">
+                        @article.Author.Username
+                    </a>
+                    <span class="date">
+                        @article.CreatedAt.ToString("MMMM d, yyyy")
+                    </span>
+                </div>
+                <div class="pull-xs-right">
+                    <button class="btn btn-sm @(article.Favorited ? "btn-primary" : "btn-outline-primary")"
+                            onclick="(() =>
+                ToggleFavorite(article))">
+                        <i class="ion-heart"></i> @article.FavoritesCount
+                    </button>
+                </div>
+            </div>
+            <a href=@($"/article/{article.Slug}") preload class="preview-link">
+                <h1>@article.Title</h1>
+                <p>@article.Description</p>
+                <span>Read more...</span>
+                <ul class="tag-list">
+                    @foreach (var tag in article.TagList)
+                    {
+                        <li class="tag-default tag-pill tag-outline">@tag</li>
+                    }
+                </ul>
+            </a>
+        </div>;
+    
+    
+    public static RenderFragment<(ArticleList ArticlesList, ArticlesFilter Filter)> RenderArticleList = context =>
+        context.ArticlesList.ArticlesCount == 0
+            ? @<div>No articles are here... yet.</div>
+            : @<div>
+                  @foreach (var article in context.ArticlesList.Articles)
+                  {
+                      @RenderArticleSummary(article);
+                  }
+                  @RenderArticleListPagination((context.Filter.Page, GetTotalPages(context.ArticlesList), context.Filter));
+              </div>;
+
+    public static readonly RenderFragment<(int ActivePage, int TotalPages, ArticlesFilter Filter)> RenderArticleListPagination = context =>
+    {
+        if (context.TotalPages <= 1) 
+            return @<text></text>;
+        
+        return @<nav id="articlelistpagination">
+                   <ul class="pagination" hx-target="#articles">
+                       @for (var i = 1; i < context.TotalPages + 1; i++)
+                       {
+                           <li class="page-item @(i == context.ActivePage ? "active" : "")" hx-get="/articles/list@(GetQuery(i, context.Filter))">
+                               <a class="page-link">@i</a>
+                           </li>
+                       }
+                   </ul>
+               </nav>;
+    };
+    
+    private static string GetQuery(int pageNumber, ArticlesFilter filter)
+    {
+        var newFilter = filter with {Page = pageNumber};
+        return newFilter.ToQueryString();
+    }
+    
+    private static int GetTotalPages(ArticleList articlesList)
+    {
+        return (int) Math.Ceiling((double) articlesList.ArticlesCount / 10);
+    }
+
+    private static string NavItemClassActive(ArticlesFilter filter, string item)
+    {
+        return item switch
+        {
+            "myFeed" => filter.MyFeed == true ? "active" : "",
+            "tag" => filter.Tag != null ? "active" : "",
+            "global" => filter.MyFeed != true && filter.Tag == null ? "active" : "",
+            "myArticles" => filter.Author is not null ? "active" : "",
+            "favoritedArticles" => filter.Favorited is not null ? "active" : "",
+            _ => ""
+        };
+    }
+}

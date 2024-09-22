@@ -1,0 +1,41 @@
+@using RealworldBlazorHtmx.App.Components.Shared
+@using RealworldBlazorHtmx.App.ServiceClient
+
+@inherits BunitContext
+@code {
+    
+    [Fact]
+    public void RendersCorrectlyWhenNotAuthenticated()
+    {
+        var fragment = SharedFragments.RenderHeader((false, "/", null));
+        var cut = Render(fragment);
+        var listItems = cut.FindAll("li");
+        
+        listItems[0].TextContent.Should().Be("Home");
+        listItems[1].TextContent.Should().Be("Sign in");
+        listItems[2].TextContent.Should().Be("Sign up");
+    }
+    
+    [Fact]
+    public void RendersCorrectlyWhenAuthenticated()
+    {
+        var user = new User
+        {
+            Username = "Erik van de Ven",
+            Image = "/evdv.png",
+            Bio = "",
+            Email = "",
+            Token = ""
+        };
+        
+        var fragment = SharedFragments.RenderHeader((true, "/", user));
+        var cut = Render(fragment);
+        var listItems = cut.FindAll("li");
+
+        listItems[0].TextContent.Should().Be("Home");
+        listItems[1].TextContent.Should().Be("New Article");
+        listItems[2].TextContent.Should().Be("Settings");
+        listItems[3].TextContent.Trim().Should().Be(user.Username);
+    }
+    
+}

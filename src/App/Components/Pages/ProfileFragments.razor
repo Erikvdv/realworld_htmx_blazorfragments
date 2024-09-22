@@ -1,0 +1,60 @@
+@using RealworldBlazorHtmx.App.Components.Shared
+
+@code {
+
+    public static readonly RenderFragment<(bool IsAuthenticated, ServiceClient.Profile Profile,
+        ArticlesFilter Filter, bool IsSelf)> RenderProfile = context =>
+        @<div class="profile-page">
+            <div class="user-info">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-10 offset-md-1">
+                            <img src="@context.Profile.Image" class="user-img"/>
+                            <h4>@context.Profile.Username</h4>
+                            <p>
+                                @context.Profile.Bio
+                            </p>
+                            @if (context is {IsSelf: true})
+                            {
+                                <a href="/settings">
+                                    <button class="btn btn-sm btn-outline-secondary action-btn">
+                                        <i class="ion-gear-a"></i>
+                                        &nbsp; Edit Profile Settings
+                                    </button>
+                                </a>
+                            }
+                            else
+                            {
+                                @RenderProfileFollowing(context.Profile)
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-md-10 offset-md-1">
+                        @ArticlesFragments.RenderArticles((context.IsAuthenticated, context.Filter))
+                    </div>
+                </div>
+            </div>
+        </div>;
+
+    public static readonly RenderFragment<ServiceClient.Profile> RenderProfileFollowing = profile =>
+    {
+        if (profile.Following)
+        {
+            return @<button class="btn btn-sm action-btn btn-secondary" hx-delete="/profile/@profile.Username/follow" hx-swap="outerHTML">
+                       <i class="ion-plus-round"></i>
+                       &nbsp; Unfollow @profile.Username
+                   </button>;
+        }
+
+        return @<button class="btn btn-sm btn-outline-secondary action-btn" hx-post="/profile/@profile.Username/follow" hx-swap="outerHTML">
+                   <i class="ion-plus-round"></i>
+                   &nbsp; Follow @profile.Username
+               </button>;
+    };
+
+}
