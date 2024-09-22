@@ -34,27 +34,27 @@
 
              @RenderFooter
          </text>;
-    
+
     public static readonly RenderFragment<(bool IsAuthenticated, string ActivePath, User? User)> RenderHeader = context =>
     {
         if (!context.IsAuthenticated)
         {
             return @<nav class="navbar navbar-light">
-                <div class="container">
-                    <a class="navbar-brand" href="/">conduit</a>
-                    <ul class="nav navbar-nav pull-xs-right">
-                        <li class="nav-item">
-                            <a class="nav-link @IsActivePath("/", context.ActivePath)" href="/">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @IsActivePath("/login", context.ActivePath)" href="/login">Sign in</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @IsActivePath("/register", context.ActivePath)" href="/register">Sign up</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>;
+                       <div class="container">
+                           <a class="navbar-brand" href="/">conduit</a>
+                           <ul class="nav navbar-nav pull-xs-right">
+                               <li class="nav-item">
+                                   <a class="nav-link @IsActivePath("/", context.ActivePath)" href="/">Home</a>
+                               </li>
+                               <li class="nav-item">
+                                   <a class="nav-link @IsActivePath("/login", context.ActivePath)" href="/login">Sign in</a>
+                               </li>
+                               <li class="nav-item">
+                                   <a class="nav-link @IsActivePath("/register", context.ActivePath)" href="/register">Sign up</a>
+                               </li>
+                           </ul>
+                       </div>
+                   </nav>;
         }
         else
         {
@@ -93,6 +93,11 @@
                 </span>
             </div>
         </footer>;
+    
+    public static RenderFragment Render500Error =>
+        @<div class="container">
+                Oops! Something went wrong. Seems like the backed api is down. Please try again later.
+            </div>;
     
     
     public static readonly RenderFragment<Dictionary<string, string[]>?> RenderErrors = errors =>
