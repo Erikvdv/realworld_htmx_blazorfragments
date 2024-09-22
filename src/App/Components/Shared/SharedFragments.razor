@@ -1,31 +1,29 @@
 @using RealworldBlazorHtmx.App.ServiceClient
 
 @code {
+    
+    public static readonly RenderFragment<(RenderFragment Body, string Title)> RenderApp = context => @<text>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="utf-8"/>
+            <title>@context.Title</title>
+            <link href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" type="text/css"/>
+            <link
+                href="//fonts.googleapis.com/css?family=Titillium+Web:700|Source+Serif+Pro:400,700|Merriweather+Sans:400,700|Source+Sans+Pro:400,300,600,700,300italic,400italic,600italic,700italic"
+                rel="stylesheet" type="text/css"/>
+            <script src="https://unpkg.com/htmx.org@2.0.2"
+                    integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ"
+                    crossorigin="anonymous"></script>
+            <script src="https://unpkg.com/htmx-ext-preload@2.0.1/preload.js"></script>
+            <script src="https://unpkg.com/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
+            <link rel="stylesheet" href="//demo.productionready.io/main.css"/>
+        </head>
 
-    public static readonly RenderFragment<(RenderFragment Body, string Title)> RenderApp = context =>
-        @<text>
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="utf-8"/>
-                <title>@context.Title</title>
-                <link href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" type="text/css"/>
-                <link
-                    href="//fonts.googleapis.com/css?family=Titillium+Web:700|Source+Serif+Pro:400,700|Merriweather+Sans:400,700|Source+Sans+Pro:400,300,600,700,300italic,400italic,600italic,700italic"
-                    rel="stylesheet" type="text/css"/>
-                <script src="https://unpkg.com/htmx.org@2.0.2"
-                        integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ"
-                        crossorigin="anonymous"></script>
-                <script src="https://unpkg.com/htmx-ext-preload@2.0.1/preload.js"></script>
-                <script src="https://unpkg.com/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
-                <link rel="stylesheet" href="//demo.productionready.io/main.css"/>
-            </head>;
-
-            <body hx-ext="preload, json-enc" hx-boost="true">
-            @context.Body
-            </body>
-
-            </html>
+        <body hx-ext="preload, json-enc" hx-boost="true">
+        @context.Body
+        </body>
+        </html>
          </text>;
     
     public static readonly RenderFragment<(RenderFragment Body, bool IsAuthenticated, string ActivePath, User? User)> RenderMainLayout = context =>

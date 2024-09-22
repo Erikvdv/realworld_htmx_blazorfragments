@@ -53,7 +53,7 @@ public class Comment
 {
     public int Id { get; set; }
 
-    public required string Body { get; set; }
+    public string Body { get; set; } = "";
 
     public required Profile Author { get; set; }
 
@@ -93,7 +93,7 @@ public class Article
 
     public required string Description { get; set; }
 
-    public required string Body { get; set; }
+    public string Body { get; set; } = "";
 
     public required string[] TagList { get; set; }
 
