@@ -25,8 +25,8 @@ public class ProfileRoutes : CarterModule
 
         var profile = await client.GetProfileAsync(profileName, user?.Token);
       
-        var fragment = ProfileFragments.RenderProfile((user is not null, profile, filter,
-                profileName == user?.Username));
+        var fragment = ProfileFragments.RenderProfile(user is not null, profile, filter,
+                profileName == user?.Username);
        
 
         return RenderHelper.RenderMainLayout(context, fragment, "Home - Conduit", user);

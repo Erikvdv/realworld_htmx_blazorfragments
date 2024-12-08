@@ -16,7 +16,7 @@
             </div>
         </div>;
 
-    public static readonly RenderFragment<Dictionary<string, string[]>?> RenderRegisterForm = errorList =>
+    public static RenderFragment RenderRegisterForm(Dictionary<string, string[]>? errorList) =>
         @<text>
              @SharedFragments.RenderErrors(errorList)
              <form hx-post="/register" hx-include="[username='Username'],[name='Email'],[name='Password']">

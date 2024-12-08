@@ -3,54 +3,54 @@
 @code {
     
     
-    public static readonly RenderFragment<(bool IsAuthenticated, ArticlesFilter Filter)> RenderArticles = context =>
+    public static RenderFragment RenderArticles(bool isAuthenticated, ArticlesFilter filter) =>
         @<div>
             <div class="articles-toggle" id="feed-toggle">
                 <ul class="nav nav-pills outline-active">
-                    @if (context.Filter.Author is not null || context.Filter.Favorited is not null)
+                    @if (filter.Author is not null || filter.Favorited is not null)
                     {
                         <li class="nav-item">
-                            <a class="nav-link @NavItemClassActive(context.Filter,"myArticles")" href="/profile/?author=@context.Filter.Favorited">
+                            <a class="nav-link @NavItemClassActive(filter,"myArticles")" href="/profile/?author=@filter.Favorited">
                                 My
                                 Articles
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @NavItemClassActive(context.Filter,"favoritedArticles")"
-                               href="/profile/?favorited=@context.Filter.Author">
+                            <a class="nav-link @NavItemClassActive(filter,"favoritedArticles")"
+                               href="/profile/?favorited=@filter.Author">
                                 Favorited Articles
                             </a>
                         </li>
                     }
                     else
                     {
-                        @if (context is {IsAuthenticated: true})
+                        @if (isAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link @NavItemClassActive(context.Filter, "myFeed")" href="/?page=1&myfeed=true">Your Feed</a>
+                                <a class="nav-link @NavItemClassActive(filter, "myFeed")" href="/?page=1&myfeed=true">Your Feed</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link @NavItemClassActive(context.Filter, "global")" href="/?page=1&myfeed=false">Global Feed</a>
+                                <a class="nav-link @NavItemClassActive(filter, "global")" href="/?page=1&myfeed=false">Global Feed</a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link @NavItemClassActive(context.Filter,"global")" href="/?page=1">Global Feed</a>
+                                <a class="nav-link @NavItemClassActive(filter,"global")" href="/?page=1">Global Feed</a>
                             </li>
                         }
 
-                        @if (context.Filter.Tag != null)
+                        @if (filter.Tag != null)
                         {
                             <li class="nav-item">
-                                <a class="nav-link @NavItemClassActive(context.Filter,"tag")">#@context.Filter.Tag</a>
+                                <a class="nav-link @NavItemClassActive(filter,"tag")">#@filter.Tag</a>
                             </li>
                         }
                     }
 
                 </ul>
             </div>
-            <div id="articles" hx-get="/articles/list@(context.Filter.ToQueryString())" hx-trigger="load">
+            <div id="articles" hx-get="/articles/list@(filter.ToQueryString())" hx-trigger="load">
                 Loading articles...
             </div>
 
@@ -92,34 +92,34 @@
         </div>;
 
 
-    public static RenderFragment<(ArticleList ArticlesList, ArticlesFilter Filter)> RenderArticleList = context =>
-        context.ArticlesList.ArticlesCount == 0
+    public static RenderFragment RenderArticleList(ArticleList articlesList, ArticlesFilter filter) =>
+        articlesList.ArticlesCount == 0
             ? @<div>No articles are here... yet.</div>
             : @<div>
-                  @foreach (var article in context.ArticlesList.Articles)
+                  @foreach (var article in articlesList.Articles)
                   {
                       @RenderArticleSummary(article)
              
                   }
-                  @RenderArticleListPagination((context.Filter.Page, GetTotalPages(context.ArticlesList), context.Filter))
+                  @RenderArticleListPagination(filter.Page, GetTotalPages(articlesList), filter)
               </div>;
 
-    public static readonly RenderFragment<(int ActivePage, int TotalPages, ArticlesFilter Filter)> RenderArticleListPagination = context =>
+    public static  RenderFragment RenderArticleListPagination(int activePage, int totalPages, ArticlesFilter filter) 
     {
-        if (context.TotalPages <= 1)
+        if (totalPages <= 1)
             return @<text></text>;
         
         return @<nav id="articlelistpagination">
                    <ul class="pagination" hx-target="#articles">
-                       @for (var i = 1; i < context.TotalPages + 1; i++)
+                       @for (var i = 1; i < totalPages + 1; i++)
                        {
-                           <li class="page-item @(i == context.ActivePage ? "active" : "")" hx-get="/articles/list@(GetQuery(i, context.Filter))">
+                           <li class="page-item @(i == activePage ? "active" : "")" hx-get="/articles/list@(GetQuery(i, filter))">
                                <a class="page-link">@i</a>
                            </li>
                        }
                    </ul>
                </nav>;
-    };
+    }
     
     private static string GetQuery(int pageNumber, ArticlesFilter filter)
     {

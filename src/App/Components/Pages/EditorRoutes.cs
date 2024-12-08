@@ -33,7 +33,7 @@ public class EditorRoutes : CarterModule
         var user = AuthenticationHelper.GetUser(context);
         var errors = new Dictionary<string, string[]>();
         var updateArticle = new UpdateArticle("", "", "", []);
-        var fragment = EditorFragments.RenderEditor((updateArticle,null,errors));
+        var fragment = EditorFragments.RenderEditor(updateArticle,null,errors);
 
         return RenderHelper.RenderMainLayout(context, fragment, "EditorComponent - Conduit", user);
     }
@@ -50,7 +50,7 @@ public class EditorRoutes : CarterModule
         var updateArticle = new UpdateArticle(
             article.Title, article.Description, article.Body, article.TagList.ToList()
         );
-        var fragment = EditorFragments.RenderEditor((updateArticle,slug,errors));
+        var fragment = EditorFragments.RenderEditor(updateArticle,slug,errors);
         return RenderHelper.RenderMainLayout(context, fragment, "EditorComponent - Conduit", user);
     }
 
@@ -118,7 +118,7 @@ public class EditorRoutes : CarterModule
         {
             var article = new UpdateArticle(request.Title, request.Description, request.Body, request.Tags.Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList());
 
-            var fragment = EditorFragments.RenderEditor((article,null,apiException.ErrorList));
+            var fragment = EditorFragments.RenderEditor(article,null,apiException.ErrorList);
             return fragment.ToComponentResult();
         }
     }

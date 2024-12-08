@@ -1,7 +1,7 @@
 @using RealworldBlazorHtmx.App.ServiceClient
 @code {
 
-    public static readonly RenderFragment<User> RenderSettings = user =>
+    public static RenderFragment RenderSettings(User user) =>
         @<div class="settings-page">
             <div class="container page">
                 <div class="row">

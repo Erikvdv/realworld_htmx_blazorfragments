@@ -23,7 +23,7 @@ public class HomeRoutes : CarterModule
             filter = filter with { MyFeed = true };
         }
         
-        var fragment = HomeFragments.RenderHome((user != null, filter));
+        var fragment = HomeFragments.RenderHome(user != null, filter);
         
         return RenderHelper.RenderMainLayout(context, fragment, "Home - Conduit", user);
     }
@@ -33,7 +33,7 @@ public class HomeRoutes : CarterModule
     {
         var articles = await client.GetArticleListAsync(new ArticlesQuery(null, null, null), null);
 
-        return ArticlesFragments.RenderArticleList((articles, filter)).ToComponentResult();
+        return ArticlesFragments.RenderArticleList(articles, filter).ToComponentResult();
     }
 
     private static async Task<RazorComponentResult> GetTags(HttpContext context, IConduitApiClient client)

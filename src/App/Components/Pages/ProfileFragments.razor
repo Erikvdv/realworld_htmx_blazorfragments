@@ -2,19 +2,19 @@
 
 @code {
 
-    public static readonly RenderFragment<(bool IsAuthenticated, ServiceClient.Profile Profile,
-        ArticlesFilter Filter, bool IsSelf)> RenderProfile = context =>
+    public static RenderFragment RenderProfile(bool isAuthenticated, ServiceClient.Profile profile,
+        ArticlesFilter filter, bool isSelf) =>
         @<div class="profile-page">
             <div class="user-info">
                 <div class="container">
                     <div class="row">
                         <div class="col-xs-12 col-md-10 offset-md-1">
-                            <img src="@context.Profile.Image" class="user-img"/>
-                            <h4>@context.Profile.Username</h4>
+                            <img src="@profile.Image" class="user-img"/>
+                            <h4>@profile.Username</h4>
                             <p>
-                                @context.Profile.Bio
+                                @profile.Bio
                             </p>
-                            @if (context is {IsSelf: true})
+                            @if (isSelf)
                             {
                                 <a href="/settings">
                                     <button class="btn btn-sm btn-outline-secondary action-btn">
@@ -25,7 +25,7 @@
                             }
                             else
                             {
-                                @RenderProfileFollowing(context.Profile)
+                                @RenderProfileFollowing(profile)
                             }
                         </div>
                     </div>
@@ -35,13 +35,13 @@
             <div class="container">
                 <div class="row">
                     <div class="col-xs-12 col-md-10 offset-md-1">
-                        @ArticlesFragments.RenderArticles((context.IsAuthenticated, context.Filter))
+                        @ArticlesFragments.RenderArticles(isAuthenticated, filter)
                     </div>
                 </div>
             </div>
         </div>;
 
-    public static readonly RenderFragment<ServiceClient.Profile> RenderProfileFollowing = profile =>
+    public static RenderFragment RenderProfileFollowing(ServiceClient.Profile profile)
     {
         if (profile.Following)
         {
@@ -55,6 +55,6 @@
                    <i class="ion-plus-round"></i>
                    &nbsp; Follow @profile.Username
                </button>;
-    };
+    }
 
 }

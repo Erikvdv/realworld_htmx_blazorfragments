@@ -32,7 +32,7 @@ public class ArticlesRoutes : CarterModule
                 );
         
             context.Response.Htmx(h => { h.ReplaceUrl(filter.ToQueryString()); });
-            return ArticlesFragments.RenderArticleList((articles, filter)).ToComponentResult();
+            return ArticlesFragments.RenderArticleList(articles, filter).ToComponentResult();
         } catch (Exception e)
         {
             return SharedFragments.Render500Error.ToComponentResult();

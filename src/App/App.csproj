@@ -10,7 +10,7 @@
     <ItemGroup>
         <PackageReference Include="Carter" Version="9.0.0" />
         <PackageReference Include="Htmx" Version="1.8.1" />
-        <PackageReference Include="Markdig" Version="0.37.0" />
+        <PackageReference Include="Markdig" Version="0.38.0" />
         <PackageReference Include="MiniValidation" Version="0.9.1" />
     </ItemGroup>
 

@@ -30,7 +30,7 @@ public class ArticleRoutes : CarterModule
         var user = context.GetUser();
 
         var article = await client.GetArticleAsync(slug, user?.Token);
-        var bodyFragment = ArticleFragments.RenderArticle((user != null, article, user));
+        var bodyFragment = ArticleFragments.RenderArticle(user != null, article, user);
         
         return RenderHelper.RenderMainLayout(context, bodyFragment, "Home - Conduit", user);
     }
@@ -62,7 +62,7 @@ public class ArticleRoutes : CarterModule
         }
         
         var article = await client.FavoriteArticleAsync(slug, user.Token);
-        return ArticleFragments.RenderArticle((true, article, user)).ToComponentResult();
+        return ArticleFragments.RenderArticle(true, article, user).ToComponentResult();
         
     }
     
@@ -73,8 +73,7 @@ public class ArticleRoutes : CarterModule
         if (user == null) return Results.Forbid();
         var article = await client.UnfavoriteArticleAsync(slug, user.Token);
 
-        return ArticleFragments.RenderArticle((true, article, user)).ToComponentResult();
-
+        return ArticleFragments.RenderArticle(true, article, user).ToComponentResult();
     }
 
 
@@ -86,7 +85,7 @@ public class ArticleRoutes : CarterModule
         
         var comments = await client.GetArticleCommentsAsync(slug, user.Token);
 
-        return ArticleFragments.RenderComments((slug, comments, user)).ToComponentResult();
+        return ArticleFragments.RenderComments(slug, comments, user).ToComponentResult();
     }
     
     public record NewComment(string Comment);
@@ -98,7 +97,7 @@ public class ArticleRoutes : CarterModule
         
         var comment = await client.AddCommentAsync(slug, newComment.Comment, user.Token);
         var comments = await client.GetArticleCommentsAsync(slug, user.Token);
-        return ArticleFragments.RenderComments((slug, comments, user)).ToComponentResult();
+        return ArticleFragments.RenderComments(slug, comments, user).ToComponentResult();
     }
     
     private static async Task<IResult> DeleteComment(int commentId, HttpContext context, string slug,
@@ -110,7 +109,7 @@ public class ArticleRoutes : CarterModule
         await client.DeleteCommentAsync(slug, commentId, user.Token);
         var comments = await client.GetArticleCommentsAsync(slug, user.Token);
 
-        return ArticleFragments.RenderComments((slug, comments, user)).ToComponentResult();
+        return ArticleFragments.RenderComments(slug, comments, user).ToComponentResult();
     }
     
     private static async Task<IResult> FollowAuthor(HttpContext context, string authorUsername, IConduitApiClient client)

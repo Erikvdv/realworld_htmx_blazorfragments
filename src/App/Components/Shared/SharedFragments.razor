@@ -29,60 +29,58 @@
     
     public static readonly RenderFragment<(RenderFragment Body, bool IsAuthenticated, string ActivePath, User? User)> RenderMainLayout = context =>
         @<text>
-             @RenderHeader((context.IsAuthenticated, context.ActivePath, context.User))
+             @RenderHeader(context.IsAuthenticated, context.ActivePath, context.User)
 
              @context.Body
 
              @RenderFooter
          </text>;
 
-    public static readonly RenderFragment<(bool IsAuthenticated, string ActivePath, User? User)> RenderHeader = context =>
+    public static RenderFragment RenderHeader(bool IsAuthenticated, string ActivePath, User? User)
     {
-        if (!context.IsAuthenticated)
+        if (!IsAuthenticated)
         {
             return @<nav class="navbar navbar-light">
                        <div class="container">
                            <a class="navbar-brand" href="/">conduit</a>
                            <ul class="nav navbar-nav pull-xs-right">
                                <li class="nav-item">
-                                   <a class="nav-link @IsActivePath("/", context.ActivePath)" href="/">Home</a>
+                                   <a class="nav-link @IsActivePath("/", ActivePath)" href="/">Home</a>
                                </li>
                                <li class="nav-item">
-                                   <a class="nav-link @IsActivePath("/login", context.ActivePath)" href="/login">Sign in</a>
+                                   <a class="nav-link @IsActivePath("/login", ActivePath)" href="/login">Sign in</a>
                                </li>
                                <li class="nav-item">
-                                   <a class="nav-link @IsActivePath("/register", context.ActivePath)" href="/register">Sign up</a>
+                                   <a class="nav-link @IsActivePath("/register", ActivePath)" href="/register">Sign up</a>
                                </li>
                            </ul>
                        </div>
                    </nav>;
         }
-        else
-        {
-            return @<nav class="navbar navbar-light">
-                       <div class="container">
-                           <a class="navbar-brand" href="/">conduit</a>
-                           <ul class="nav navbar-nav pull-xs-right">
-                               <li class="nav-item">
-                                   <a class="nav-link @IsActivePath("/", context.ActivePath)" href="/">Home</a>
-                               </li>
-                               <li class="nav-item">
-                                   <a class="nav-link @IsActivePath("/editor", context.ActivePath)" href="/editor"> <i class="ion-compose"></i>New Article</a>
-                               </li>
-                               <li class="nav-item">
-                                   <a class="nav-link @IsActivePath("/settings", context.ActivePath)" href="/settings"> <i class="ion-gear-a"></i>Settings</a>
-                               </li>
-                               <li class="nav-item">
-                                   <a class="nav-link" href="/profile/?author=@context.User?.Username">
-                                       <img src="@context.User?.Image" class="user-pic"/>
-                                       @context.User?.Username
-                                   </a>
-                               </li>
-                           </ul>
-                       </div>
-                   </nav>;
-        }
-    };
+        
+        return @<nav class="navbar navbar-light">
+                   <div class="container">
+                       <a class="navbar-brand" href="/">conduit</a>
+                       <ul class="nav navbar-nav pull-xs-right">
+                           <li class="nav-item">
+                               <a class="nav-link @IsActivePath("/", ActivePath)" href="/">Home</a>
+                           </li>
+                           <li class="nav-item">
+                               <a class="nav-link @IsActivePath("/editor", ActivePath)" href="/editor"> <i class="ion-compose"></i>New Article</a>
+                           </li>
+                           <li class="nav-item">
+                               <a class="nav-link @IsActivePath("/settings", ActivePath)" href="/settings"> <i class="ion-gear-a"></i>Settings</a>
+                           </li>
+                           <li class="nav-item">
+                               <a class="nav-link" href="/profile/?author=@User?.Username">
+                                   <img src="@User?.Image" class="user-pic"/>
+                                   @User?.Username
+                               </a>
+                           </li>
+                       </ul>
+                   </div>
+               </nav>;
+    }
 
     public static RenderFragment RenderFooter =>
         @<footer>
@@ -101,7 +99,7 @@
             </div>;
     
     
-    public static readonly RenderFragment<Dictionary<string, string[]>?> RenderErrors = errors =>
+    public static RenderFragment RenderErrors(Dictionary<string, string[]>? errors)
     {
         if (errors == null)
             return @<text></text>;
@@ -112,7 +110,7 @@
                        <li>@error.Key @string.Join(" ", error.Value)</li>
                    }
                </ul>;
-    };
+    }
 
     
     private static string IsActivePath(string path, string activePath)

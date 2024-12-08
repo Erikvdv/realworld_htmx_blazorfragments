@@ -1,9 +1,9 @@
 @using RealworldBlazorHtmx.App.Components.Shared
 @code {
 
-    public static readonly RenderFragment<(bool IsAuthenticated, ArticlesFilter Filter)> RenderHome = context =>
+    public static RenderFragment RenderHome(bool isAuthenticated, ArticlesFilter filter) =>
         @<div class="home-page">
-            @if (!context.IsAuthenticated)
+            @if (!isAuthenticated)
             {
                 <div class="banner">
                     <div class="container">
@@ -16,7 +16,7 @@
             <div class="container page">
                 <div class="row">
                     <div class="col-md-9">
-                        @ArticlesFragments.RenderArticles((context.IsAuthenticated, context.Filter))
+                        @ArticlesFragments.RenderArticles(isAuthenticated, filter)
                     </div>
 
                     <div class="col-md-3">
@@ -26,7 +26,7 @@
             </div>
         </div>;
     
-    public static readonly RenderFragment<List<string>> RenderTags = tags =>
+    public static RenderFragment RenderTags(List<string> tags) =>
         @<div class="sidebar">
             <p>Popular Tags</p>
             <div class="tag-list" id="taglist">
