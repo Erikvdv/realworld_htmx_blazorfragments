@@ -272,7 +272,7 @@ public class ConduitApiClient : IConduitApiClient
         {
             var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(responseBody, _jsonSerializerOptions);
 
-            throw new ApiException(errorResponse.Errors);
+            throw new ApiException(errorResponse?.Errors ?? new ());
         }
 
         throw new Exception(
@@ -289,7 +289,7 @@ public class ConduitApiClient : IConduitApiClient
     {
         var properties = from p in obj.GetType().GetProperties()
             where p.GetValue(obj, null) != null
-            select p.Name.ToLower() + "=" + HttpUtility.UrlEncode(p.GetValue(obj, null).ToString());
+            select p.Name.ToLower() + "=" + HttpUtility.UrlEncode(p?.GetValue(obj, null)?.ToString() ?? string.Empty);
 
         return string.Join("&", properties.ToArray());
     }

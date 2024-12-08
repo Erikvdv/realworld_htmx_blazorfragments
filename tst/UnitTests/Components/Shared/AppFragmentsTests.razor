@@ -1,4 +1,4 @@
-@using RealworldBlazorHtmx.App.Components.Shared
+@using RealworldBlazorHtmx.App.Features.Shared
 @using RealworldBlazorHtmx.App.ServiceClient
 
 @inherits BunitContext
@@ -7,7 +7,7 @@
     [Fact]
     public void RendersCorrectlyWhenNotAuthenticated()
     {
-        var fragment = SharedFragments.RenderHeader(false, "/", null);
+        var fragment = AppFragments.RenderHeader(false, "/", null);
         var cut = Render(fragment);
         var listItems = cut.FindAll("li");
         
@@ -28,7 +28,7 @@
             Token = ""
         };
         
-        var fragment = SharedFragments.RenderHeader(true, "/", user);
+        var fragment = AppFragments.RenderHeader(true, "/", user);
         var cut = Render(fragment);
         var listItems = cut.FindAll("li");
 

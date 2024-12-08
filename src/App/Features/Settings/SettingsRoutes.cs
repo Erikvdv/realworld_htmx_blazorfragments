@@ -1,9 +1,10 @@
 using Carter;
 using Htmx;
-using RealworldBlazorHtmx.App.Components.Shared;
+using RealworldBlazorHtmx.App.Features.Shared;
+using RealworldBlazorHtmx.App.Features.Shared.Helpers;
 using RealworldBlazorHtmx.App.ServiceClient;
 
-namespace RealworldBlazorHtmx.App.Components.Pages;
+namespace RealworldBlazorHtmx.App.Features.Settings;
 
 public class SettingsRoutes : CarterModule
 {

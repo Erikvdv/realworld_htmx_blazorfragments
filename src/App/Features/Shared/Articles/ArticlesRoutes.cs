@@ -1,9 +1,10 @@
 using Carter;
 using Htmx;
 using Microsoft.AspNetCore.Http.HttpResults;
+using RealworldBlazorHtmx.App.Features.Shared.Helpers;
 using RealworldBlazorHtmx.App.ServiceClient;
 
-namespace RealworldBlazorHtmx.App.Components.Shared;
+namespace RealworldBlazorHtmx.App.Features.Shared.Articles;
 
 public class ArticlesRoutes : CarterModule
 {
@@ -33,9 +34,9 @@ public class ArticlesRoutes : CarterModule
         
             context.Response.Htmx(h => { h.ReplaceUrl(filter.ToQueryString()); });
             return ArticlesFragments.RenderArticleList(articles, filter).ToComponentResult();
-        } catch (Exception e)
+        } catch (Exception)
         {
-            return SharedFragments.Render500Error.ToComponentResult();
+            return AppFragments.Render500Error.ToComponentResult();
         }
         
     }

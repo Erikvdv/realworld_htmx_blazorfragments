@@ -1,10 +1,11 @@
 using Carter;
 using Htmx;
 using MiniValidation;
-using RealworldBlazorHtmx.App.Components.Shared;
+using RealworldBlazorHtmx.App.Features.Shared;
+using RealworldBlazorHtmx.App.Features.Shared.Helpers;
 using RealworldBlazorHtmx.App.ServiceClient;
 
-namespace RealworldBlazorHtmx.App.Components.Pages;
+namespace RealworldBlazorHtmx.App.Features.Register;
 
 public class RegisterRoutes : CarterModule
 {

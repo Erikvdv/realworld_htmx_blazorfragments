@@ -2,13 +2,13 @@
 
 @code {
     
-    public static readonly RenderFragment<(RenderFragment Body, string Title)> RenderApp = context => @<text>
+    public static RenderFragment RenderApp(RenderFragment body, string title) => @<text>
         <!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>@context.Title</title>
+            <title>@title</title>
             <link href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" type="text/css"/>
             <link
                 href="//fonts.googleapis.com/css?family=Titillium+Web:700|Source+Serif+Pro:400,700|Merriweather+Sans:400,700|Source+Sans+Pro:400,300,600,700,300italic,400italic,600italic,700italic"
@@ -22,36 +22,36 @@
         </head>
 
         <body hx-ext="preload, json-enc" hx-boost="true">
-        @context.Body
+        @body
         </body>
         </html>
          </text>;
     
-    public static readonly RenderFragment<(RenderFragment Body, bool IsAuthenticated, string ActivePath, User? User)> RenderMainLayout = context =>
+    public static RenderFragment RenderMainLayout(RenderFragment body, bool isAuthenticated, string activePath, User? user) =>
         @<text>
-             @RenderHeader(context.IsAuthenticated, context.ActivePath, context.User)
+             @RenderHeader(isAuthenticated, activePath, user)
 
-             @context.Body
+             @body
 
              @RenderFooter
          </text>;
 
-    public static RenderFragment RenderHeader(bool IsAuthenticated, string ActivePath, User? User)
+    public static RenderFragment RenderHeader(bool isAuthenticated, string activePath, User? user)
     {
-        if (!IsAuthenticated)
+        if (!isAuthenticated)
         {
             return @<nav class="navbar navbar-light">
                        <div class="container">
                            <a class="navbar-brand" href="/">conduit</a>
                            <ul class="nav navbar-nav pull-xs-right">
                                <li class="nav-item">
-                                   <a class="nav-link @IsActivePath("/", ActivePath)" href="/">Home</a>
+                                   <a class="nav-link @IsActivePath("/", activePath)" href="/">Home</a>
                                </li>
                                <li class="nav-item">
-                                   <a class="nav-link @IsActivePath("/login", ActivePath)" href="/login">Sign in</a>
+                                   <a class="nav-link @IsActivePath("/login", activePath)" href="/login">Sign in</a>
                                </li>
                                <li class="nav-item">
-                                   <a class="nav-link @IsActivePath("/register", ActivePath)" href="/register">Sign up</a>
+                                   <a class="nav-link @IsActivePath("/register", activePath)" href="/register">Sign up</a>
                                </li>
                            </ul>
                        </div>
@@ -63,18 +63,18 @@
                        <a class="navbar-brand" href="/">conduit</a>
                        <ul class="nav navbar-nav pull-xs-right">
                            <li class="nav-item">
-                               <a class="nav-link @IsActivePath("/", ActivePath)" href="/">Home</a>
+                               <a class="nav-link @IsActivePath("/", activePath)" href="/">Home</a>
                            </li>
                            <li class="nav-item">
-                               <a class="nav-link @IsActivePath("/editor", ActivePath)" href="/editor"> <i class="ion-compose"></i>New Article</a>
+                               <a class="nav-link @IsActivePath("/editor", activePath)" href="/editor"> <i class="ion-compose"></i>New Article</a>
                            </li>
                            <li class="nav-item">
-                               <a class="nav-link @IsActivePath("/settings", ActivePath)" href="/settings"> <i class="ion-gear-a"></i>Settings</a>
+                               <a class="nav-link @IsActivePath("/settings", activePath)" href="/settings"> <i class="ion-gear-a"></i>Settings</a>
                            </li>
                            <li class="nav-item">
-                               <a class="nav-link" href="/profile/?author=@User?.Username">
-                                   <img src="@User?.Image" class="user-pic"/>
-                                   @User?.Username
+                               <a class="nav-link" href="/profile/?author=@user?.Username">
+                                   <img src="@user?.Image" class="user-pic"/>
+                                   @user?.Username
                                </a>
                            </li>
                        </ul>

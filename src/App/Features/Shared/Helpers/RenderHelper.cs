@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http.HttpResults;
 using RealworldBlazorHtmx.App.ServiceClient;
 
-namespace RealworldBlazorHtmx.App.Components.Shared;
+namespace RealworldBlazorHtmx.App.Features.Shared.Helpers;
 
 public static class RenderHelper
 {
@@ -11,9 +11,9 @@ public static class RenderHelper
     {
         var isAuthenticated = context.User.Identity?.IsAuthenticated ?? false;
         var layoutFragment =
-            SharedFragments.RenderMainLayout((bodyFragment, isAuthenticated, context.Request.Path, user));
+            AppFragments.RenderMainLayout(bodyFragment, isAuthenticated, context.Request.Path, user);
 
-        return SharedFragments.RenderApp((layoutFragment, pageTitle)).ToComponentResult();
+        return AppFragments.RenderApp(layoutFragment, pageTitle).ToComponentResult();
     }
 
     public static RazorComponentResult ToComponentResult(this RenderFragment fragment)

@@ -14,4 +14,13 @@
         <PackageReference Include="MiniValidation" Version="0.9.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <AdditionalFiles Include="Features\Shared\AppFragments.razor" />
+      <AdditionalFiles Include="Features\Shared\FragmentComponent.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\" />
+    </ItemGroup>
+
 </Project>

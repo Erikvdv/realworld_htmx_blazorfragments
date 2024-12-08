@@ -1,4 +1,4 @@
-namespace RealworldBlazorHtmx.App.Components.Shared;
+namespace RealworldBlazorHtmx.App.Features.Shared.Articles;
 
 public record ArticlesFilter(string? Tag, string? Author, string? Favorited, bool? MyFeed, int Page = 1)
 {

@@ -1,10 +1,11 @@
 using Carter;
 using Htmx;
 using Microsoft.AspNetCore.Http.HttpResults;
-using RealworldBlazorHtmx.App.Components.Shared;
+using RealworldBlazorHtmx.App.Features.Shared;
+using RealworldBlazorHtmx.App.Features.Shared.Helpers;
 using RealworldBlazorHtmx.App.ServiceClient;
 
-namespace RealworldBlazorHtmx.App.Components.Pages;
+namespace RealworldBlazorHtmx.App.Features.Article;
 
 public class ArticleRoutes : CarterModule
 {

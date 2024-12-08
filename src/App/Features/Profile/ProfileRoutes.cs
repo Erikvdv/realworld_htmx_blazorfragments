@@ -1,10 +1,12 @@
 using Carter;
 using Htmx;
 using Microsoft.AspNetCore.Http.HttpResults;
-using RealworldBlazorHtmx.App.Components.Shared;
+using RealworldBlazorHtmx.App.Features.Shared;
+using RealworldBlazorHtmx.App.Features.Shared.Articles;
+using RealworldBlazorHtmx.App.Features.Shared.Helpers;
 using RealworldBlazorHtmx.App.ServiceClient;
 
-namespace RealworldBlazorHtmx.App.Components.Pages;
+namespace RealworldBlazorHtmx.App.Features.Profile;
 
 public class ProfileRoutes : CarterModule
 {
@@ -21,7 +23,7 @@ public class ProfileRoutes : CarterModule
     {
         var user = context.GetUser();
 
-        var profileName = filter.Author ?? filter.Favorited;
+        var profileName = filter.Author ?? filter.Favorited ?? throw new ArgumentException("Author or Favorited is required");
 
         var profile = await client.GetProfileAsync(profileName, user?.Token);
       

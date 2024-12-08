@@ -1,4 +1,4 @@
-@using RealworldBlazorHtmx.App.Components.Shared
+@using RealworldBlazorHtmx.App.Features.Shared
 @using RealworldBlazorHtmx.App.ServiceClient
 
 @code {
@@ -8,7 +8,7 @@
             <div class="container page">
                 <div class="row">
                     <div class="col-md-10 offset-md-1 col-xs-12">
-                        @SharedFragments.RenderErrors(errorList)
+                        @AppFragments.RenderErrors(errorList)
 
                         <form>
                             <fieldset>

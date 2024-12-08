@@ -1,4 +1,4 @@
-@using RealworldBlazorHtmx.App.Components.Shared
+@using RealworldBlazorHtmx.App.Features.Shared
 @code {
 
     public static RenderFragment RenderRegister =>
@@ -18,7 +18,7 @@
 
     public static RenderFragment RenderRegisterForm(Dictionary<string, string[]>? errorList) =>
         @<text>
-             @SharedFragments.RenderErrors(errorList)
+             @AppFragments.RenderErrors(errorList)
              <form hx-post="/register" hx-include="[username='Username'],[name='Email'],[name='Password']">
                  <fieldset class="form-group">
                      <input class="form-control form-control-lg" type="text" placeholder="Username" name="username"/>

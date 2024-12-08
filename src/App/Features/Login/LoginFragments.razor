@@ -1,4 +1,4 @@
-@using RealworldBlazorHtmx.App.Components.Shared
+@using RealworldBlazorHtmx.App.Features.Shared
 @code {
 
     public static RenderFragment RenderLogin =>
@@ -18,7 +18,7 @@
     
     public static RenderFragment RenderLoginForm(Dictionary<string, string[]>? errors) =>
         @<form hx-post="/login" hx-include="[name='Email'],[name='Password']">
-            @SharedFragments.RenderErrors(errors)
+            @AppFragments.RenderErrors(errors)
             <fieldset class="form-group">
                 <input class="form-control form-control-lg" type="text" placeholder="Email" name="Email"/>
             </fieldset>

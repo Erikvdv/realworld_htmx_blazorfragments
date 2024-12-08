@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using RealworldBlazorHtmx.App.ServiceClient;
 
-namespace RealworldBlazorHtmx.App.Components.Shared;
+namespace RealworldBlazorHtmx.App.Features.Shared.Helpers;
 
 public static class AuthenticationHelper
 {
@@ -33,9 +33,9 @@ public static class AuthenticationHelper
 
         if (!isAuthenticated) return null;
 
-        var token = context.User.Claims.FirstOrDefault(c => c.Type == "Token")?.Value;
-        var image = context.User.Claims.FirstOrDefault(c => c.Type == "Image")?.Value;
-        var username = context.User.Claims.FirstOrDefault(c => c.Type == "Username")?.Value;
+        var token = context.User.Claims.FirstOrDefault(c => c.Type == "Token")?.Value ?? throw new Exception("Token not found");
+        var image = context.User.Claims.FirstOrDefault(c => c.Type == "Image")?.Value ?? throw new Exception("Image not found");
+        var username = context.User.Claims.FirstOrDefault(c => c.Type == "Username")?.Value ?? throw new Exception("Username not found");
         return new User
         {
             Token = token,
