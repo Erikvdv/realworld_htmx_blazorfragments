@@ -1,6 +1,5 @@
 @using Markdig
 @using RealworldBlazorHtmx.App.ServiceClient
-
 @code {
 
     public static RenderFragment RenderArticle(Article article, User? user) =>
@@ -86,23 +85,26 @@
         @<text>
              @if (profile.Following)
              {
-                 <button class="btn btn-sm action-btn btn-secondary" hx-delete="/article/followauthor/@profile.Username" hx-swap="outerHTML">
+                 <button class="btn btn-sm action-btn btn-secondary" hx-delete="/article/followauthor/@profile.Username"
+                         hx-swap="outerHTML">
                      <i class="ion-plus-round"></i>
                      &nbsp; Unfollow @profile.Username
                  </button>
              }
              else
              {
-                 <button class="btn btn-sm btn-outline-secondary" hx-post="/article/followauthor/@profile.Username" hx-swap="outerHTML">
+                 <button class="btn btn-sm btn-outline-secondary" hx-post="/article/followauthor/@profile.Username"
+                         hx-swap="outerHTML">
                      <i class="ion-plus-round"></i>
                      &nbsp; Follow @profile.Username
                  </button>
              }
-        </text>;
+    </text>;
 
     public static RenderFragment RenderComments(string articleSlug, List<Comment> comments, User user) =>
         @<text>
-             <form class="card comment-form" hx-post="/article/@articleSlug/comments" hx-include="[name='comment']" hx-target="#commentlist">
+             <form class="card comment-form" hx-post="/article/@articleSlug/comments" hx-include="[name='comment']"
+                   hx-target="#commentlist">
                  <div class="card-block">
                      <textarea class="form-control" placeholder="Write a comment..." rows="3" name="comment"></textarea>
                  </div>
@@ -117,28 +119,30 @@
              }
     </text>;
 
-    private static RenderFragment RenderComment(Comment comment, string username, string articleSlug) => 
+    private static RenderFragment RenderComment(Comment comment, string username, string articleSlug) =>
         @<div class="card">
-           <div class="card-block">
-               <p class="card-text">
-                   @comment.Body
-               </p>
-           </div>
-           <div class="card-footer">
-               <a href="/profile/?author=@comment.Author" class="comment-author">
-                   <img src="@comment.Author.Image" class="comment-author-img"/>
-               </a>
-               &nbsp;
-               <a href="/profile/?author=@comment.Author.Username" class="comment-author">@comment.Author.Username</a>
-               <span class="date-posted">@comment.UpdatedAt</span>
-               @if (comment.Author.Username == username)
-               {
-                   <span class="mod-options">
-                       <i class="ion-trash-a" hx-delete="/article/@articleSlug/comments/@comment.Id" hx-target="#commentlist"></i>
+            <div class="card-block">
+                <p class="card-text">
+                    @comment.Body
+                </p>
+            </div>
+            <div class="card-footer">
+                <a href="/profile/?author=@comment.Author" class="comment-author">
+                    <img src="@comment.Author.Image" class="comment-author-img"/>
+                </a>
+                &nbsp;
+                <a href="/profile/?author=@comment.Author.Username" class="comment-author">@comment.Author.Username</a>
+                <span class="date-posted">@comment.UpdatedAt</span>
+                @if (comment.Author.Username == username)
+                {
+                    <span class="mod-options">
+                       <i class="ion-trash-a" hx-delete="/article/@articleSlug/comments/@comment.Id"
+                          hx-target="#commentlist"></i>
                    </span>
-               }
-           </div>
+                }
+            </div>
         </div>;
+
     private static string GetHtml(string markdown)
     {
         var pipeline = new MarkdownPipelineBuilder()

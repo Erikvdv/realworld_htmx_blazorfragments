@@ -17,25 +17,30 @@ public static class AuthenticationHelper
         var authProperties = new AuthenticationProperties
             {ExpiresUtc = DateTimeOffset.UtcNow.AddDays(60), IsPersistent = true};
 
-        await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(claimsIdentity), authProperties);
+        await context.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(claimsIdentity), authProperties
+        );
     }
-    
+
     public static async Task Logout(HttpContext context)
     {
         await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
-    
-    
+
+
     public static User? GetUser(this HttpContext context)
     {
         var isAuthenticated = context.User.Identity?.IsAuthenticated ?? false;
 
         if (!isAuthenticated) return null;
 
-        var token = context.User.Claims.FirstOrDefault(c => c.Type == "Token")?.Value ?? throw new Exception("Token not found");
-        var image = context.User.Claims.FirstOrDefault(c => c.Type == "Image")?.Value ?? throw new Exception("Image not found");
-        var username = context.User.Claims.FirstOrDefault(c => c.Type == "Username")?.Value ?? throw new Exception("Username not found");
+        var token = context.User.Claims.FirstOrDefault(c => c.Type == "Token")?.Value ??
+                    throw new Exception("Token not found");
+        var image = context.User.Claims.FirstOrDefault(c => c.Type == "Image")?.Value ??
+                    throw new Exception("Image not found");
+        var username = context.User.Claims.FirstOrDefault(c => c.Type == "Username")?.Value ??
+                       throw new Exception("Username not found");
         return new User
         {
             Token = token,

@@ -1,8 +1,8 @@
-@using RealworldBlazorHtmx.App.Features.Shared
 @using RealworldBlazorHtmx.App.Features.Shared.Articles
+@using RealworldBlazorHtmx.App.ServiceClient
 @code {
 
-    public static RenderFragment RenderProfile(bool isAuthenticated, ServiceClient.Profile profile,
+    public static RenderFragment RenderProfile(bool isAuthenticated, Profile profile,
         ArticlesFilter filter, bool isSelf) =>
         @<div class="profile-page">
             <div class="user-info">
@@ -41,20 +41,22 @@
             </div>
         </div>;
 
-    public static RenderFragment RenderProfileFollowing(ServiceClient.Profile profile)
+    public static RenderFragment RenderProfileFollowing(Profile profile)
     {
         if (profile.Following)
         {
-            return @<button class="btn btn-sm action-btn btn-secondary" hx-delete="/profile/@profile.Username/follow" hx-swap="outerHTML">
-                       <i class="ion-plus-round"></i>
-                       &nbsp; Unfollow @profile.Username
-                   </button>;
+            return @<button class="btn btn-sm action-btn btn-secondary" hx-delete="/profile/@profile.Username/follow"
+                            hx-swap="outerHTML">
+                <i class="ion-plus-round"></i>
+                &nbsp; Unfollow @profile.Username
+            </button>;
         }
 
-        return @<button class="btn btn-sm btn-outline-secondary action-btn" hx-post="/profile/@profile.Username/follow" hx-swap="outerHTML">
-                   <i class="ion-plus-round"></i>
-                   &nbsp; Follow @profile.Username
-               </button>;
+        return @<button class="btn btn-sm btn-outline-secondary action-btn" hx-post="/profile/@profile.Username/follow"
+                        hx-swap="outerHTML">
+            <i class="ion-plus-round"></i>
+            &nbsp; Follow @profile.Username
+        </button>;
     }
 
 }

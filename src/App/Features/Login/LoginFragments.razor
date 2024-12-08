@@ -15,7 +15,7 @@
                 </div>
             </div>
         </div>;
-    
+
     public static RenderFragment RenderLoginForm(Dictionary<string, string[]>? errors) =>
         @<form hx-post="/login" hx-include="[name='Email'],[name='Password']">
             @AppFragments.RenderErrors(errors)

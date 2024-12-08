@@ -1,7 +1,6 @@
 using Carter;
 using Htmx;
 using Microsoft.AspNetCore.Http.HttpResults;
-using RealworldBlazorHtmx.App.Features.Shared;
 using RealworldBlazorHtmx.App.Features.Shared.Articles;
 using RealworldBlazorHtmx.App.Features.Shared.Helpers;
 using RealworldBlazorHtmx.App.ServiceClient;
@@ -18,23 +17,27 @@ public class ProfileRoutes : CarterModule
         path.MapDelete("/{profileName}/follow", UnfollowProfile);
     }
 
-    private static async Task<RazorComponentResult> GetProfile(HttpContext context, [AsParameters] ArticlesFilter filter,
+    private static async Task<RazorComponentResult> GetProfile(HttpContext context,
+        [AsParameters] ArticlesFilter filter,
         IConduitApiClient client)
     {
         var user = context.GetUser();
 
-        var profileName = filter.Author ?? filter.Favorited ?? throw new ArgumentException("Author or Favorited is required");
+        var profileName = filter.Author ??
+                          filter.Favorited ?? throw new ArgumentException("Author or Favorited is required");
 
         var profile = await client.GetProfileAsync(profileName, user?.Token);
-      
-        var fragment = ProfileFragments.RenderProfile(user is not null, profile, filter,
-                profileName == user?.Username);
-       
+
+        var fragment = ProfileFragments.RenderProfile(
+            user is not null, profile, filter,
+            profileName == user?.Username
+        );
+
 
         return RenderHelper.RenderMainLayout(context, fragment, "Home - Conduit", user);
     }
-    
-    
+
+
     private static async Task<IResult> FollowProfile(HttpContext context, string profileName,
         IConduitApiClient client)
     {
@@ -45,23 +48,22 @@ public class ProfileRoutes : CarterModule
             context.Response.Htmx(h => h.Redirect("/login"));
             return Results.Unauthorized();
         }
-        
+
         var profile = await client.FollowProfileAsync(profileName, user.Token);
-        
+
         return ProfileFragments.RenderProfileFollowing(profile).ToComponentResult();
-        
     }
-    
+
     private static async Task<IResult> UnfollowProfile(HttpContext context, string profileName,
         IConduitApiClient client)
     {
         var user = context.GetUser();
 
-        if (user is null) 
+        if (user is null)
             return Results.Unauthorized();
-        
+
         var profile = await client.UnFollowProfileAsync(profileName, user.Token);
-        
+
         return ProfileFragments.RenderProfileFollowing(profile).ToComponentResult();
     }
 }

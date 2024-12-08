@@ -1,8 +1,7 @@
 @using RealworldBlazorHtmx.App.ServiceClient
-
 @code {
-    
-    
+
+
     public static RenderFragment RenderArticles(bool isAuthenticated, ArticlesFilter filter) =>
         @<div>
             <div class="articles-toggle" id="feed-toggle">
@@ -10,13 +9,14 @@
                     @if (filter.Author is not null || filter.Favorited is not null)
                     {
                         <li class="nav-item">
-                            <a class="nav-link @NavItemClassActive(filter,"myArticles")" href="/profile/?author=@filter.Favorited">
+                            <a class="nav-link @NavItemClassActive(filter, "myArticles")"
+                               href="/profile/?author=@filter.Favorited">
                                 My
                                 Articles
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @NavItemClassActive(filter,"favoritedArticles")"
+                            <a class="nav-link @NavItemClassActive(filter, "favoritedArticles")"
                                href="/profile/?favorited=@filter.Author">
                                 Favorited Articles
                             </a>
@@ -27,23 +27,26 @@
                         @if (isAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link @NavItemClassActive(filter, "myFeed")" href="/?page=1&myfeed=true">Your Feed</a>
+                                <a class="nav-link @NavItemClassActive(filter, "myFeed")" href="/?page=1&myfeed=true">Your
+                                    Feed</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link @NavItemClassActive(filter, "global")" href="/?page=1&myfeed=false">Global Feed</a>
+                                <a class="nav-link @NavItemClassActive(filter, "global")" href="/?page=1&myfeed=false">Global
+                                    Feed</a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link @NavItemClassActive(filter,"global")" href="/?page=1">Global Feed</a>
+                                <a class="nav-link @NavItemClassActive(filter, "global")" href="/?page=1">Global
+                                    Feed</a>
                             </li>
                         }
 
                         @if (filter.Tag != null)
                         {
                             <li class="nav-item">
-                                <a class="nav-link @NavItemClassActive(filter,"tag")">#@filter.Tag</a>
+                                <a class="nav-link @NavItemClassActive(filter, "tag")">#@filter.Tag</a>
                             </li>
                         }
                     }
@@ -99,34 +102,34 @@
                   @foreach (var article in articlesList.Articles)
                   {
                       @RenderArticleSummary(article)
-             
                   }
                   @RenderArticleListPagination(filter.Page, GetTotalPages(articlesList), filter)
               </div>;
 
-    public static  RenderFragment RenderArticleListPagination(int activePage, int totalPages, ArticlesFilter filter) 
+    public static RenderFragment RenderArticleListPagination(int activePage, int totalPages, ArticlesFilter filter)
     {
         if (totalPages <= 1)
             return @<text></text>;
-        
+
         return @<nav id="articlelistpagination">
-                   <ul class="pagination" hx-target="#articles">
-                       @for (var i = 1; i < totalPages + 1; i++)
-                       {
-                           <li class="page-item @(i == activePage ? "active" : "")" hx-get="/articles/list@(GetQuery(i, filter))">
-                               <a class="page-link">@i</a>
-                           </li>
-                       }
-                   </ul>
-               </nav>;
+            <ul class="pagination" hx-target="#articles">
+                @for (var i = 1; i < totalPages + 1; i++)
+                {
+                    <li class="page-item @(i == activePage ? "active" : "")"
+                        hx-get="/articles/list@(GetQuery(i, filter))">
+                        <a class="page-link">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>;
     }
-    
+
     private static string GetQuery(int pageNumber, ArticlesFilter filter)
     {
         var newFilter = filter with {Page = pageNumber};
         return newFilter.ToQueryString();
     }
-    
+
     private static int GetTotalPages(ArticleList articlesList)
     {
         return (int) Math.Ceiling((double) articlesList.ArticlesCount / 10);
@@ -144,4 +147,5 @@
             _ => ""
         };
     }
+
 }

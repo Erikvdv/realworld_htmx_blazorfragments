@@ -1,6 +1,5 @@
 using Carter;
 using Microsoft.AspNetCore.Http.HttpResults;
-using RealworldBlazorHtmx.App.Features.Shared;
 using RealworldBlazorHtmx.App.Features.Shared.Articles;
 using RealworldBlazorHtmx.App.Features.Shared.Helpers;
 using RealworldBlazorHtmx.App.ServiceClient;
@@ -20,13 +19,9 @@ public class HomeRoutes : CarterModule
     {
         var user = context.GetUser();
 
-        if (user is not null && filter.MyFeed is null && filter.Tag is null)
-        {
-            filter = filter with { MyFeed = true };
-        }
-        
+        if (user is not null && filter.MyFeed is null && filter.Tag is null) filter = filter with {MyFeed = true};
+
         var fragment = HomeFragments.RenderHome(user != null, filter);
-        
         return RenderHelper.RenderMainLayout(context, fragment, "Home - Conduit", user);
     }
 

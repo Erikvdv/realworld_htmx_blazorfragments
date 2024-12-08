@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using Carter;
 using Htmx;
 using MiniValidation;
-using RealworldBlazorHtmx.App.Features.Shared;
 using RealworldBlazorHtmx.App.Features.Shared.Helpers;
 using RealworldBlazorHtmx.App.ServiceClient;
 
@@ -16,17 +15,6 @@ public class LoginRoutes : CarterModule
         path.MapGet("/", GetLogin);
         path.MapPost("/", SubmitLogin);
     }
-    
-    private record LoginFormInput(string Email, string Password) : IValidatableObject
-    {
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (string.IsNullOrEmpty(Email)) 
-                yield return new ValidationResult("can't be blank.", new[] {nameof(Email)});
-            if (string.IsNullOrEmpty(Password))
-                yield return new ValidationResult("can't be blank.", new[] {nameof(Password)});
-        }
-    }
 
     private static IResult GetLogin(HttpContext context)
     {
@@ -34,7 +22,7 @@ public class LoginRoutes : CarterModule
 
         if (user is not null)
             return Results.Redirect("/");
-        
+
         return RenderHelper.RenderMainLayout(context, LoginFragments.RenderLogin, "Sign-in - Conduit");
     }
 
@@ -46,19 +34,34 @@ public class LoginRoutes : CarterModule
 
         try
         {
-            var user = await client.LoginAsync(new ServiceClient.Login
-                {Email = input.Email, Password = input.Password});
+            var user = await client.LoginAsync(
+                new ServiceClient.Login
+                    {Email = input.Email, Password = input.Password}
+            );
             await AuthenticationHelper.LoginUser(context, user);
-            context.Response.Htmx(h =>
-            {
-                h.Redirect("/");
-                h.WithTrigger("UserLoggedIn");
-            });
+            context.Response.Htmx(
+                h =>
+                {
+                    h.Redirect("/");
+                    h.WithTrigger("UserLoggedIn");
+                }
+            );
             return Results.Ok();
         }
         catch (ApiException apiException)
         {
             return LoginFragments.RenderLoginForm(apiException.ErrorList).ToComponentResult();
+        }
+    }
+
+    private record LoginFormInput(string Email, string Password) : IValidatableObject
+    {
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (string.IsNullOrEmpty(Email))
+                yield return new ValidationResult("can't be blank.", new[] {nameof(Email)});
+            if (string.IsNullOrEmpty(Password))
+                yield return new ValidationResult("can't be blank.", new[] {nameof(Password)});
         }
     }
 }

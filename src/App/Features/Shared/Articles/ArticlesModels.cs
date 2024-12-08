@@ -13,7 +13,9 @@ public record ArticlesFilter(string? Tag, string? Author, string? Favorited, boo
             {"myfeed", MyFeed.HasValue ? MyFeed.ToString() : null}
         };
 
-        return "?" + string.Join("&",
-            parameters.Where(p => !string.IsNullOrEmpty(p.Value)).Select(p => $"{p.Key}={p.Value}"));
+        return "?" + string.Join(
+            "&",
+            parameters.Where(p => !string.IsNullOrEmpty(p.Value)).Select(p => $"{p.Key}={p.Value}")
+        );
     }
 }

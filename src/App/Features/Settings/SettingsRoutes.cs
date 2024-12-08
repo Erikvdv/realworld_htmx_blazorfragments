@@ -1,6 +1,5 @@
 using Carter;
 using Htmx;
-using RealworldBlazorHtmx.App.Features.Shared;
 using RealworldBlazorHtmx.App.Features.Shared.Helpers;
 using RealworldBlazorHtmx.App.ServiceClient;
 
@@ -18,20 +17,17 @@ public class SettingsRoutes : CarterModule
     private static Task<IResult> GetSettings(HttpContext context, IConduitApiClient client)
     {
         var user = context.GetUser();
-        
-        if (user is null) 
+
+        if (user is null)
             return Task.FromResult(Results.Redirect("/signin"));
         var fragment = SettingsFragments.RenderSettings(user);
         return Task.FromResult<IResult>(RenderHelper.RenderMainLayout(context, fragment, "Home - Conduit", user));
     }
-    
+
     private static async Task<IResult> Logout(HttpContext context)
     {
         await AuthenticationHelper.Logout(context);
-        context.Response.Htmx(h =>
-        {
-            h.Redirect("/");
-        });
+        context.Response.Htmx(h => { h.Redirect("/"); });
         return Results.Ok();
     }
 }

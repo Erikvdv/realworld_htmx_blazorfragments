@@ -2,7 +2,6 @@ using Carter;
 using Htmx;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using RealworldBlazorHtmx.App.Features.Shared;
 using RealworldBlazorHtmx.App.Features.Shared.Helpers;
 using RealworldBlazorHtmx.App.ServiceClient;
 
@@ -20,56 +19,51 @@ public class EditorRoutes : CarterModule
         path.MapPost("/article", CreateArticle);
     }
 
-    private record CreateArticleRequest(string Title, string Description, string Body, string[] Tags, string Slug);
-
-    private record AddTagRequest(string NewTag, List<string>? Tags);
-
-    private record DeleteTagRequest(List<string>? Tags);
-
     private static IResult GetEditor(HttpContext context)
     {
         var isAuthenticated = context.User.Identity?.IsAuthenticated ?? false;
         if (!isAuthenticated)
             return Results.Redirect("/");
-        var user = AuthenticationHelper.GetUser(context);
+        var user = context.GetUser();
         var errors = new Dictionary<string, string[]>();
         var updateArticle = new UpdateArticle("", "", "", []);
-        var fragment = EditorFragments.RenderEditor(updateArticle,null,errors);
+        var fragment = EditorFragments.RenderEditor(updateArticle, null, errors);
 
         return RenderHelper.RenderMainLayout(context, fragment, "EditorComponent - Conduit", user);
     }
-    
+
     private static async Task<IResult> GetEditorForSlug(HttpContext context, string slug, IConduitApiClient client)
     {
         var user = context.GetUser();
         if (user == null)
             return Results.Redirect("/");
-        
+
         var article = await client.GetArticleAsync(slug, user.Token);
 
         var errors = new Dictionary<string, string[]>();
         var updateArticle = new UpdateArticle(
             article.Title, article.Description, article.Body, article.TagList.ToList()
         );
-        var fragment = EditorFragments.RenderEditor(updateArticle,slug,errors);
+        var fragment = EditorFragments.RenderEditor(updateArticle, slug, errors);
         return RenderHelper.RenderMainLayout(context, fragment, "EditorComponent - Conduit", user);
     }
 
-    
+
     private static RazorComponentResult AddTag(HttpContext context, AddTagRequest request,
         IConduitApiClient client)
     {
         var newTags = (request.Tags ?? [])
-            .Concat(new[] { request.NewTag })
+            .Concat(new[] {request.NewTag})
             .Where(x => !string.IsNullOrEmpty(x))
             .Distinct()
             .ToList();
 
         return EditorFragments.RenderTags(newTags).ToComponentResult();
     }
-    
-    
-    private static RazorComponentResult DeleteTag(HttpContext context, [FromRoute] string tag, [FromBody] DeleteTagRequest request,
+
+
+    private static RazorComponentResult DeleteTag(HttpContext context, [FromRoute] string tag,
+        [FromBody] DeleteTagRequest request,
         IConduitApiClient client)
     {
         var newTags = (request.Tags ?? [])
@@ -79,10 +73,9 @@ public class EditorRoutes : CarterModule
         newTags.Remove(tag);
 
         return EditorFragments.RenderTags(newTags).ToComponentResult();
-
     }
 
-    
+
     private static async Task<IResult> CreateArticle(CreateArticleRequest request, IConduitApiClient client,
         HttpContext context)
     {
@@ -117,10 +110,19 @@ public class EditorRoutes : CarterModule
         }
         catch (ApiException apiException)
         {
-            var article = new UpdateArticle(request.Title, request.Description, request.Body, request.Tags.Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList());
+            var article = new UpdateArticle(
+                request.Title, request.Description, request.Body,
+                request.Tags.Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList()
+            );
 
-            var fragment = EditorFragments.RenderEditor(article,null,apiException.ErrorList);
+            var fragment = EditorFragments.RenderEditor(article, null, apiException.ErrorList);
             return fragment.ToComponentResult();
         }
     }
+
+    private record CreateArticleRequest(string Title, string Description, string Body, string[] Tags, string Slug);
+
+    private record AddTagRequest(string NewTag, List<string>? Tags);
+
+    private record DeleteTagRequest(List<string>? Tags);
 }
