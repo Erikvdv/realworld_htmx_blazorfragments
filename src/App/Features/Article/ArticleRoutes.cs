@@ -31,7 +31,7 @@ public class ArticleRoutes : CarterModule
         var user = context.GetUser();
 
         var article = await client.GetArticleAsync(slug, user?.Token);
-        var bodyFragment = ArticleFragments.RenderArticle(user != null, article, user);
+        var bodyFragment = ArticleFragments.RenderArticle(article, user);
         
         return RenderHelper.RenderMainLayout(context, bodyFragment, "Home - Conduit", user);
     }
@@ -63,7 +63,7 @@ public class ArticleRoutes : CarterModule
         }
         
         var article = await client.FavoriteArticleAsync(slug, user.Token);
-        return ArticleFragments.RenderArticle(true, article, user).ToComponentResult();
+        return ArticleFragments.RenderArticle(article, user).ToComponentResult();
         
     }
     
@@ -74,7 +74,7 @@ public class ArticleRoutes : CarterModule
         if (user == null) return Results.Forbid();
         var article = await client.UnfavoriteArticleAsync(slug, user.Token);
 
-        return ArticleFragments.RenderArticle(true, article, user).ToComponentResult();
+        return ArticleFragments.RenderArticle(article, user).ToComponentResult();
     }
 
 

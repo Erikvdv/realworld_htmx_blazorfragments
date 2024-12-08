@@ -3,7 +3,7 @@
 
 @code {
 
-    public static RenderFragment RenderArticle(bool isAuthenticated, Article article, User? user) =>
+    public static RenderFragment RenderArticle(Article article, User? user) =>
         @<div class="article-page" id="articlepage">
             <div class="banner">
                 <div class="container">
@@ -71,7 +71,7 @@
                 </div>
 
                 <hr/>
-                @if (isAuthenticated && user is not null)
+                @if (user is not null)
                 {
                     <div class="col-xs-12 col-md-8 offset-md-2">
                         <div hx-get="/article/@article.Slug/comments" hx-trigger="load" id="commentlist"></div>
