@@ -13,9 +13,11 @@ public enum FeedType
 
 public class Login
 {
-    [Required] public required string Email { get; set; }
+    [Required]
+    public required string Email { get; set; }
 
-    [Required] public required string Password { get; set; }
+    [Required]
+    public required string Password { get; set; }
 }
 
 public class User
@@ -166,6 +168,7 @@ public class UserUpdateRequest
 public record NewUserRequest(NewUser User);
 
 public record NewComment(string Body);
+
 public record NewCommentRequest(NewComment Comment);
 
 public class ErrorResponse

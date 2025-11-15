@@ -1,17 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>RealworldBlazorHtmx.App</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Carter" Version="8.2.1" />
-        <PackageReference Include="Htmx" Version="1.8.0" />
-        <PackageReference Include="Markdig" Version="0.37.0" />
-        <PackageReference Include="MiniValidation" Version="0.9.1" />
+        <PackageReference Include="Carter" Version="9.0.0"/>
+        <PackageReference Include="Htmx" Version="1.8.1"/>
+        <PackageReference Include="Markdig" Version="0.38.0"/>
+        <PackageReference Include="MiniValidation" Version="0.9.1"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="Features\Shared\AppFragments.razor"/>
+        <AdditionalFiles Include="Features\Shared\FragmentComponent.razor"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="wwwroot\"/>
     </ItemGroup>
 
 </Project>

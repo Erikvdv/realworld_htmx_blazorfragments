@@ -10,10 +10,10 @@ public class ConduitApiClient : IConduitApiClient
 {
     private readonly HttpClient _httpClient;
 
+    private readonly JsonSerializerOptions _jsonSerializerOptions = new() {PropertyNameCaseInsensitive = true};
+
     private readonly ILogger<ConduitApiClient> _logger;
     private readonly ConduitClientSettings _settings;
-
-    private readonly JsonSerializerOptions _jsonSerializerOptions = new() {PropertyNameCaseInsensitive = true};
 
     public ConduitApiClient(
         HttpClient httpClient,
@@ -105,18 +105,24 @@ public class ConduitApiClient : IConduitApiClient
         var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
     }
 
-    public async Task<Article> FavoriteArticleAsync(string slug, string token, CancellationToken cancellationToken = default)
+    public async Task<Article> FavoriteArticleAsync(string slug, string token,
+        CancellationToken cancellationToken = default)
     {
-        var httpRequest = new HttpRequestMessage(HttpMethod.Post, new Uri($"api/articles/{slug}/favorite", UriKind.Relative));
+        var httpRequest = new HttpRequestMessage(
+            HttpMethod.Post, new Uri($"api/articles/{slug}/favorite", UriKind.Relative)
+        );
         httpRequest.Headers.Add("Authorization", $"Token {token}");
 
         var response = await HandleRequest<ArticleResponse>(httpRequest, cancellationToken);
         return response.Article;
     }
 
-    public async Task<Article> UnfavoriteArticleAsync(string slug, string token, CancellationToken cancellationToken = default)
+    public async Task<Article> UnfavoriteArticleAsync(string slug, string token,
+        CancellationToken cancellationToken = default)
     {
-        var httpRequest = new HttpRequestMessage(HttpMethod.Delete, new Uri($"api/articles/{slug}/favorite", UriKind.Relative));
+        var httpRequest = new HttpRequestMessage(
+            HttpMethod.Delete, new Uri($"api/articles/{slug}/favorite", UriKind.Relative)
+        );
         httpRequest.Headers.Add("Authorization", $"Token {token}");
 
         var response = await HandleRequest<ArticleResponse>(httpRequest, cancellationToken);
@@ -134,12 +140,14 @@ public class ConduitApiClient : IConduitApiClient
         return response.Comments;
     }
 
-    public async Task<Comment> AddCommentAsync(string slug, string comment, string token, CancellationToken cancellationToken = default)
+    public async Task<Comment> AddCommentAsync(string slug, string comment, string token,
+        CancellationToken cancellationToken = default)
     {
-
         var newCommentRequest = new NewCommentRequest(new NewComment(comment));
         var requestBody = JsonSerializer.Serialize(newCommentRequest, _jsonSerializerOptions);
-        var httpRequest = new HttpRequestMessage(HttpMethod.Post, new Uri($"api/articles/{slug}/comments", UriKind.Relative))
+        var httpRequest = new HttpRequestMessage(
+            HttpMethod.Post, new Uri($"api/articles/{slug}/comments", UriKind.Relative)
+        )
         {
             Content = new StringContent(requestBody, Encoding.UTF8, "application/json")
         };
@@ -149,9 +157,12 @@ public class ConduitApiClient : IConduitApiClient
         return response.Comment;
     }
 
-    public async Task DeleteCommentAsync(string slug, int commentId, string token, CancellationToken cancellationToken = default)
+    public async Task DeleteCommentAsync(string slug, int commentId, string token,
+        CancellationToken cancellationToken = default)
     {
-        var httpRequest = new HttpRequestMessage(HttpMethod.Delete, new Uri($"api/articles/{slug}/comments/{commentId}", UriKind.Relative));
+        var httpRequest = new HttpRequestMessage(
+            HttpMethod.Delete, new Uri($"api/articles/{slug}/comments/{commentId}", UriKind.Relative)
+        );
         httpRequest.Headers.Add("Authorization", $"Token {token}");
         var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
     }
@@ -159,7 +170,7 @@ public class ConduitApiClient : IConduitApiClient
     public async Task<string[]> GetTagListAsync(CancellationToken cancellationToken = default)
     {
         var httpRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("api/tags", UriKind.Relative));
-        
+
         var response = await HandleRequest<TagsResponse>(httpRequest, cancellationToken);
         return response.Tags;
     }
@@ -228,8 +239,10 @@ public class ConduitApiClient : IConduitApiClient
     public async Task<Profile> UnFollowProfileAsync(string username, string token,
         CancellationToken cancellationToken = default)
     {
-        var httpRequest = new HttpRequestMessage(HttpMethod.Delete,
-            new Uri($"api/profiles/{username}/follow", UriKind.Relative));
+        var httpRequest = new HttpRequestMessage(
+            HttpMethod.Delete,
+            new Uri($"api/profiles/{username}/follow", UriKind.Relative)
+        );
 
         httpRequest.Headers.Add("Authorization", $"Token {token}");
 
@@ -264,15 +277,19 @@ public class ConduitApiClient : IConduitApiClient
         var responseBody = await GetResponseBody(response);
 
         if (response.IsSuccessStatusCode)
-            return JsonSerializer.Deserialize<T>(responseBody, _jsonSerializerOptions) ?? throw new InvalidOperationException();
+            return JsonSerializer.Deserialize<T>(responseBody, _jsonSerializerOptions) ??
+                   throw new InvalidOperationException();
 
-        _logger.LogError("Error executing request to \'{RequestRequestUri}\', HTTP {ResponseStatusCode}: {ResponseBody}", request.RequestUri, (int) response.StatusCode, responseBody);
+        _logger.LogError(
+            "Error executing request to \'{RequestRequestUri}\', HTTP {ResponseStatusCode}: {ResponseBody}",
+            request.RequestUri, (int) response.StatusCode, responseBody
+        );
         if (response.StatusCode == HttpStatusCode.UnprocessableEntity ||
             response.StatusCode == HttpStatusCode.Forbidden)
         {
             var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(responseBody, _jsonSerializerOptions);
 
-            throw new ApiException(errorResponse.Errors);
+            throw new ApiException(errorResponse?.Errors ?? new Dictionary<string, string[]>());
         }
 
         throw new Exception(
@@ -289,7 +306,7 @@ public class ConduitApiClient : IConduitApiClient
     {
         var properties = from p in obj.GetType().GetProperties()
             where p.GetValue(obj, null) != null
-            select p.Name.ToLower() + "=" + HttpUtility.UrlEncode(p.GetValue(obj, null).ToString());
+            select p.Name.ToLower() + "=" + HttpUtility.UrlEncode(p?.GetValue(obj, null)?.ToString() ?? string.Empty);
 
         return string.Join("&", properties.ToArray());
     }
